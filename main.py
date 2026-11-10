@@ -25,6 +25,9 @@ from nexus_xr.spatial_core import (
     RigidBodyHologram3D,
     NXSProjectSerializer,
     SerializableHologram3D,
+    HistoricalSpatialLens,
+    HistoricalObjectPOI,
+    build_default_historical_park,
 )
 from nexus_xr.ai_brain import (
     HypersphericalGestureNet,
@@ -128,7 +131,7 @@ def run_ai_demo():
 
 def run_genetic_demo():
     print("\n" + "=" * 70)
-    print(" [4/4] DEMOSTRACIÓN: PROGRAMACIÓN GENÉTICA SIMBÓLICA (CRUCE KOZA)")
+    print(" [4/5] DEMOSTRACIÓN: PROGRAMACIÓN GENÉTICA SIMBÓLICA (CRUCE KOZA)")
     print("=" * 70)
     p1 = EvolvableASTFunction(ind_id=0, generation=1)
     p2 = EvolvableASTFunction(ind_id=1, generation=1)
@@ -140,6 +143,46 @@ def run_genetic_demo():
     print("✓ Ecuaciones genéticas recombinadas y listas para compilación a Bytecode de 32 bits.")
 
 
+def run_historical_demo():
+    print("\n" + "=" * 70)
+    print(" [5/5] DEMOSTRACIÓN: LENTE GEO-HISTÓRICA EN REALIDAD AUMENTADA Y VIRTUAL")
+    print("=" * 70)
+    park_lens = build_default_historical_park()
+    print(f"Parque Histórico inicializado con {len(park_lens.catalog)} Puntos de Interés (POIs).")
+
+    # Coordenadas de prueba que simulan al usuario caminando por el parque con la cámara
+    itinerario = [
+        {"desc": "Entrada principal del Parque (cerca al monumento al Libertador)", "pos": (0.0, 0.0, 0.0)},
+        {"desc": "Plazoleta Arqueológica (cerca al monolito prehispánico)", "pos": (-4.5, 0.0, 5.0)},
+        {"desc": "Observatorio Astronómico (cerca al sabio Caldas)", "pos": (5.0, 0.0, 6.5)},
+    ]
+
+    synthetic_frame = np.full((720, 1280, 3), 20, dtype=np.uint8)
+
+    for i, parada in enumerate(itinerario, 1):
+        print(f"\n--- Parada {i}: {parada['desc']} ---")
+        park_lens.set_camera_pose(parada["pos"])
+        rendered_frame, breakdowns = park_lens.render_ar_frame(synthetic_frame)
+        print(f"Cámara en Coordenadas: {parada['pos']}")
+        print(f"Objetos detectados por proximidad en cámara: {len(breakdowns)}")
+
+        for b in breakdowns:
+            print(f"  ✦ Holograma 3D: '{b['title']}' ({b['category']}) en coords {b['coordinates']}")
+            print(f"    ➤ De dónde vino: {b['origin']}")
+            print(f"    ➤ Época: {b['epoch']}")
+            print(f"    ➤ Reseña: {b['description']}")
+
+    # Guardar en Realidad Virtual (.nxs)
+    nxs_output = "parque_historico_expedicion.nxs"
+    save_msg = park_lens.save_vr_expedition(nxs_output)
+    print(f"\n✓ {save_msg}")
+
+    # Exportar script de reproducción en NexusLang
+    script_output = "parque_historico_nexuslang.nxs"
+    export_msg = park_lens.export_nexus_script(script_output)
+    print(f"✓ {export_msg}")
+
+
 def main():
     parser = argparse.ArgumentParser(description="NexusXR - Spatial Engine CLI Runner")
     parser.add_argument("--demo-all", action="store_true", help="Ejecutar todas las demostraciones del motor")
@@ -147,6 +190,7 @@ def main():
     parser.add_argument("--physics", action="store_true", help="Probar motor de físicas 3D e imanes")
     parser.add_argument("--ai", action="store_true", help="Probar bóveda de gestos PyTorch y Transformer")
     parser.add_argument("--genetic", action="store_true", help="Probar evolución genética de código AST")
+    parser.add_argument("--history", action="store_true", help="Probar desglose histórico AR con cámara y persistencia VR .nxs")
 
     args = parser.parse_args()
 
@@ -155,6 +199,7 @@ def main():
         run_physics_demo()
         run_ai_demo()
         run_genetic_demo()
+        run_historical_demo()
         print("\n==================================================================")
         print(" [NEXUSXR] TODOS LOS SUBSISTEMAS OPERATIVOS Y VERIFICADOS CON ÉXITO")
         print("==================================================================")
@@ -163,6 +208,7 @@ def main():
         if args.physics: run_physics_demo()
         if args.ai: run_ai_demo()
         if args.genetic: run_genetic_demo()
+        if args.history: run_historical_demo()
 
 
 if __name__ == "__main__":
