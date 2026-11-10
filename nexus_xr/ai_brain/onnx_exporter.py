@@ -97,20 +97,16 @@ def export_transformer_and_vault(
     # 2. Crear tensor de entrada de ejemplo: (Batch=1, SeqLen=32, Features=84)
     dummy_input = torch.randn(1, 32, 84, dtype=torch.float32, device=device)
 
-    # 3. Exportar a ONNX con plegado de constantes y Opset 17
+    # 3. Exportar a ONNX con plegado de constantes y Opset 18
     torch.onnx.export(
         model,
         dummy_input,
         onnx_out_path,
         export_params=True,
-        opset_version=17,
+        opset_version=18,
         do_constant_folding=True,
         input_names=["hand_sequence_84d"],
         output_names=["hypersphere_embedding_128d"],
-        dynamic_axes={
-            "hand_sequence_84d": {0: "batch_size"},
-            "hypersphere_embedding_128d": {0: "batch_size"}
-        }
     )
     print(f"[ONNX] Grafo exportado exitosamente a '{onnx_out_path}'.")
 

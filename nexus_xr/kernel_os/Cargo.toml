@@ -5,8 +5,8 @@ edition = "2021"
 
 [dependencies]
 # Binding oficial de ONNX Runtime para Rust con aceleración SIMD/TensorRT/CoreML/DirectML
-ort = { version = "2.0.0-rc.9", features = ["load-dynamic"] }
-ndarray = "0.16"
+ort = { version = "2.0.0-rc.15", features = ["load-dynamic", "ndarray"] }
+ndarray = "0.17"
 
 [profile.release]
 opt-level = 3

@@ -11,5 +11,7 @@ gemini_chat_full_expanded.txt
 chat_summary.txt
 organize_nexus.py
 *.onnx
+*.onnx.data
 *.bin
 *.nxs
+*.pt
