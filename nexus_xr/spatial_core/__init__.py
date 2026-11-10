@@ -9,6 +9,11 @@ from .historical_spatial_lens import (
     HistoricalSpatialLens,
     build_default_historical_park,
 )
+from .global_historical_connector import (
+    GlobalHistoricalConnector,
+    GlobalLocationQuery,
+    EMBEDDED_KNOWLEDGE_BASE,
+)
 
 __all__ = [
     "SpatialHologram3D",
@@ -21,4 +26,7 @@ __all__ = [
     "HistoricalObjectPOI",
     "HistoricalSpatialLens",
     "build_default_historical_park",
+    "GlobalHistoricalConnector",
+    "GlobalLocationQuery",
+    "EMBEDDED_KNOWLEDGE_BASE",
 ]

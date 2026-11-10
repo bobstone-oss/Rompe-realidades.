@@ -28,6 +28,7 @@ from nexus_xr.spatial_core import (
     HistoricalSpatialLens,
     HistoricalObjectPOI,
     build_default_historical_park,
+    GlobalHistoricalConnector,
 )
 from nexus_xr.ai_brain import (
     HypersphericalGestureNet,
@@ -183,6 +184,44 @@ def run_historical_demo():
     print(f"✓ {export_msg}")
 
 
+def run_global_historical_demo():
+    print("\n" + "=" * 70)
+    print(" [6/6] DEMOSTRACIÓN: CONECTOR GLOBAL 3D E IA DE CONOCIMIENTO (WIKIPEDIA/OSM/CESIUM)")
+    print("=" * 70)
+    connector = GlobalHistoricalConnector()
+    lens = HistoricalSpatialLens(detection_radius=25.0)
+
+    # Lista de lugares globales icónicos a resolver en tiempo real
+    monumentos = [
+        {"name": "Torre Eiffel", "lat": 48.8584, "lon": 2.2945},
+        {"name": "Pirámides de Teotihuacán", "lat": 19.6925, "lon": -98.8438},
+        {"name": "Coliseo Romano", "lat": 41.8902, "lon": 12.4922},
+    ]
+
+    print("Consultando en vivo la IA de conocimiento y servicios geoespaciales...")
+    pois = connector.sync_locations_to_lens(lens, monumentos)
+
+    print(f"\n✓ Se resolvieron y proyectaron {len(pois)} monumentos globales en el motor espacial:")
+    for poi in pois:
+        card = lens.get_ar_breakdown_card(poi)
+        print(f"\n✦ {card['title']} [{card['category']}]")
+        print(f"  ➤ DE DÓNDE VINO: {card['origin']}")
+        print(f"  ➤ ÉPOCA / AÑO:  {card['epoch']}")
+        print(f"  ➤ COORDENADAS:  {card['coordinates']}")
+        print(f"  ➤ RESEÑA:       {card['description'][:140]}...")
+
+    # Renderizar frame AR con cámara en el centro
+    lens.set_camera_pose((0.0, 0.0, 0.0))
+    test_frame = np.full((720, 1280, 3), 15, dtype=np.uint8)
+    rendered_view, breakdowns = lens.render_ar_frame(test_frame)
+    print(f"\n✓ Frame AR holográfico renderizado con {len(breakdowns)} tarjetas y geometrías 3D.")
+
+    # Guardar expedición mundial en formato .nxs
+    nxs_world = "expedicion_mundial_3d.nxs"
+    msg_save = lens.save_vr_expedition(nxs_world)
+    print(f"✓ {msg_save}")
+
+
 def main():
     parser = argparse.ArgumentParser(description="NexusXR - Spatial Engine CLI Runner")
     parser.add_argument("--demo-all", action="store_true", help="Ejecutar todas las demostraciones del motor")
@@ -191,6 +230,7 @@ def main():
     parser.add_argument("--ai", action="store_true", help="Probar bóveda de gestos PyTorch y Transformer")
     parser.add_argument("--genetic", action="store_true", help="Probar evolución genética de código AST")
     parser.add_argument("--history", action="store_true", help="Probar desglose histórico AR con cámara y persistencia VR .nxs")
+    parser.add_argument("--global-history", action="store_true", help="Probar conector global histórico con IA (Wikipedia/OSM/Cesium)")
 
     args = parser.parse_args()
 
@@ -200,6 +240,7 @@ def main():
         run_ai_demo()
         run_genetic_demo()
         run_historical_demo()
+        run_global_historical_demo()
         print("\n==================================================================")
         print(" [NEXUSXR] TODOS LOS SUBSISTEMAS OPERATIVOS Y VERIFICADOS CON ÉXITO")
         print("==================================================================")
@@ -209,6 +250,7 @@ def main():
         if args.ai: run_ai_demo()
         if args.genetic: run_genetic_demo()
         if args.history: run_historical_demo()
+        if args.global_history: run_global_historical_demo()
 
 
 if __name__ == "__main__":
