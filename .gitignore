@@ -1,0 +1,15 @@
+target/
+**/target/
+__pycache__/
+**/__pycache__/
+*.pyc
+*.log
+chat_turns.json
+extracted_chat_data.json
+gemini_chat_text.txt
+gemini_chat_full_expanded.txt
+chat_summary.txt
+organize_nexus.py
+*.onnx
+*.bin
+*.nxs
